@@ -16,14 +16,15 @@
 
 package deep.in.spring.cloud;
 
-import java.util.List;
-import java.util.Random;
-
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.ServiceInstanceChooser;
 
+import java.util.List;
+import java.util.Random;
+
 /**
+ * 自定义一个 ServiceInstanceChooser 的实现类来完成负债均衡操作
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  */
 public class RandomServiceInstanceChooser implements ServiceInstanceChooser {
@@ -37,6 +38,13 @@ public class RandomServiceInstanceChooser implements ServiceInstanceChooser {
         random = new Random();
     }
 
+    /**
+     * Spring Cloud 编程模型的抽象，直接定义ServiceInstance服务实例接口 nacos和eureka 都实现了对应接口 com.alibaba.cloud.nacos.NacosServiceInstance
+     * org.springframework.cloud.netflix.eureka.EurekaServiceInstance
+     *
+     * @param serviceId The service ID to look up the LoadBalancer.
+     * @return
+     */
     @Override
     public ServiceInstance choose(String serviceId) {
         List<ServiceInstance> serviceInstanceList =

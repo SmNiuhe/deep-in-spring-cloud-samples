@@ -34,7 +34,7 @@ import org.springframework.web.client.RestTemplate;
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  */
 @SpringBootApplication
-@EnableDiscoveryClient(autoRegister = false)
+@EnableDiscoveryClient(autoRegister = true)
 //@LoadBalancerClients(defaultConfiguration = MyLoadBalancerConfiguration.class)
 public class NacosConsumer4SCLB {
 
@@ -42,12 +42,28 @@ public class NacosConsumer4SCLB {
         SpringApplication.run(NacosConsumer4SCLB.class, args);
     }
 
+
     @Configuration
     @LoadBalancerClient(name = "nacos-provider-lb", configuration = MyLoadBalancerConfiguration.class)
     class LoadBalanceConfiguration {
 
     }
 
+    // LoadBalancerAutoConfiguration 配置类处理
+    // 1 获取ApplicationContext中所有被@LoadBalanced注释修饰的RestTemplate
+    // 2. List<RestTemplateCustomizer> 是ApplicationContext 存在的RestTemplateCustomizer Bean的集合。
+    // 3. 遍历代码1出得到的 RestTemplate集合，并使用 RestTemplateCustomizer集合给每个RestTemplate定制
+
+    // LoadBalancerClient继承ServiceInstanceChooser，会根据ServiceInstance和Request请求信息执行最终的结果
+    // 1.BlockingLoadBalancerClient SpringCloud LoadBalancer默认的实现，不过功能点没有Ribbon的完善
+    // 2. RibbonLoadBalancerClient netflix.ribbon 实现了改接口，Ribbon 在时机工作中还是相对于SpringCloud的默认实现还是用的更广泛
+    // 3. ·reconstructURI方法。这个方法用于重新构造URI。比如，要访问nacos-provider-lb服务下的“/”路径，
+    // 这个URI为http：//nacos-provider-lb/。nacos-provider-lb 服务在注册中心有10个服务实例，
+    // 某个服务实例ServiceInstance的IP为192.168.1.100，端口为8080。那么重新构造的真正URI为http：//192.168.1.100：8080/。
+
+    // LoadBalancerRequest 表示一次负载均衡请求，会被LoadBalancerRequestFactory 构造。
+    // 构造出的负载均衡请求实现类是ServiceRequestWrapper（内部基于服务实例和请求信息构造出真正的 URI）。
+    // 然后根据 LoadBalancerRequestTransformer 做二次加工。LoadBalancerRequest 接口定义如下：
     @Bean
     @LoadBalanced
     public RestTemplate restTemplate() {
