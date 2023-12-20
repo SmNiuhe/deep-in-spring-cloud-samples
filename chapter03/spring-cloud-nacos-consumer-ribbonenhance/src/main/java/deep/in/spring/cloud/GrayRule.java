@@ -16,20 +16,19 @@
 
 package deep.in.spring.cloud;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.alibaba.cloud.nacos.ribbon.NacosServer;
-
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
 import com.netflix.loadbalancer.Server;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
+ * @RibbonClients(defaultConfiguration = {GrayRule.class})
+ * 通过@RibbonClients 配置默认的Configuration，优先级最高影响所有的 @RibbonClient
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  */
 public class GrayRule extends AbstractLoadBalancerRule {
@@ -41,6 +40,8 @@ public class GrayRule extends AbstractLoadBalancerRule {
 
     }
 
+    // 重写IRule#choose方法，进行灰度调用控制
+    // 进行灰度发布的服务，通过元数据直接筛选出原来后进行随机访问
     @Override
     public Server choose(Object key) {
         boolean grayInvocation = false;

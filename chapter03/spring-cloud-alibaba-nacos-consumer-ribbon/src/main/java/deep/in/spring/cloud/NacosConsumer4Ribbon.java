@@ -21,14 +21,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * Netflix Ribbon是 Netflix开源的客户端负载均衡组件，在 Spring Cloud LoadBalancer出现之前，它是Spring Cloud生态里唯一的负载均衡组件。
+ * 目前市场上绝大多数的Spring Cloud应用还是使用Ribbon作为其负载均衡组件。
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
+ *
+ * @RibbonClient ，自定配置都可以替換，本身 SpringFactory 对应没个服务实例都有单独的配置上下文
+ * 提示：@RibbonClients 注解的 defaultConfiguration 属性表示默认的配置类，所有的RibbonLoadBalancerClient都会使用这些配置类里的配置。
+ *
+ * nacos-discovery 包下默认的负载均衡器是 netflix-ribbon，RibbonLoadBalancerClient
  */
 @SpringBootApplication
 @EnableDiscoveryClient(autoRegister = false)
@@ -39,6 +45,14 @@ public class NacosConsumer4Ribbon {
         SpringApplication.run(NacosConsumer4Ribbon.class, args);
     }
 
+    // 1. SpringClientFactory 是一个与 LoadBalancerClientFactory 作用类似的工厂类，其内部维护着一个 Map，
+    // 这个 Map用于保存各个服务的ApplicationContext（Map的 key表示服务名）。每个ApplicationContext内部维护对应服务的一些配置和Bean。
+
+    // 2SpringClientFactory在RibbonAutoConfiguration自动化配置类中被构造，可以通过构造器注入的方式注入。
+
+    // 3. reconstructURI方法与Spring Cloud LoadBalancer中的BlockingLoadBalancerClient实现完全不一样。BlockingLoadBalancerClient
+    // 直接委托给 LoadBalancerUriTools＃reconstructURI 方法实现，其内部使用ServiceInstance 进行相应的属性替换；而 RibbonLoadBalancerClient
+    // 内部基于新的类 com.netflix.loadbalancer.Server（表示一个服务器实例，内部有 host、port、schema、zone等属性）来实现。
     @Bean
     @LoadBalanced
     public RestTemplate restTemplate() {

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 当前请求上下文
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  */
 public class RibbonRequestContext {

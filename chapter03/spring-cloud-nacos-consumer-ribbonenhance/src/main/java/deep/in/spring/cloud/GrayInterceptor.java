@@ -16,8 +16,6 @@
 
 package deep.in.spring.cloud;
 
-import java.io.IOException;
-
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -25,7 +23,11 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.IOException;
+
 /**
+ *
+ * 编写流量识别能力的代码。定义 GrayInterceptor，用于拦截请求，并基于请求的特征判断是否是一次灰度调用
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  */
 public class GrayInterceptor implements ClientHttpRequestInterceptor {
@@ -33,6 +35,8 @@ public class GrayInterceptor implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
         throws IOException {
+        // Ribbon LoadBalancer
+        // 应用流量控制需要以下两个能力，流量识别能力和实例打标能力
         if (request.getHeaders().containsKey("Gray")) {
             String value = request.getHeaders().getFirst("Gray");
             if (value.equals("true")) {

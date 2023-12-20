@@ -20,6 +20,7 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 
 /**
+ * 自定义请求拦截器，针对特定的请求客户端进行拦截处理
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  */
 public class GrayRequestInterceptor implements RequestInterceptor {

@@ -16,8 +16,6 @@
 
 package deep.in.spring.cloud;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -34,6 +32,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -55,6 +55,8 @@ public class NacosRibbonEnhanceConsumer {
         SpringApplication.run(NacosRibbonEnhanceConsumer.class, args);
     }
 
+    // RestTemplate 自定义拦截器，拦截所有请求头部携带 Gray 参数的请求
+    // 如果存在，将当前请求 Gray 添加到 RibbonRequestContext 上下文中，并继续继续放入到 ServletRequestAttributes 中进行透传
     @Bean
     @LoadBalanced
     public RestTemplate restTemplate() {

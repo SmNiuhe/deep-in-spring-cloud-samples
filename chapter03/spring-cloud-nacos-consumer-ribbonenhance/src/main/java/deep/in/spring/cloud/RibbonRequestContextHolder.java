@@ -17,6 +17,7 @@
 package deep.in.spring.cloud;
 
 /**
+ * 负载均衡请求上下文持有者
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
  */
 public class RibbonRequestContextHolder {
